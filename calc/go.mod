@@ -1,4 +1,4 @@
-module github.com/SH1SH4/GOLANG_Homework
+module calc
 
 go 1.24.0
 

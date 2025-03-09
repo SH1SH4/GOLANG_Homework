@@ -1,24 +1,26 @@
 package main
 
 import (
+	funcs "uniq/Funcs"
+
 	"flag"
 	"fmt"
 	"os"
 )
 
 func main() {
-	cFlag := flag.Bool("c", false, "Подсчитать количество встречаний строки")
-	dFlag := flag.Bool("d", false, "Вывести только повторяющиеся строки")
-	uFlag := flag.Bool("u", false, "Вывести только уникальные строки")
-	iFlag := flag.Bool("i", false, "Игнорировать регистр")
-	fFlag := flag.Int("f", 0, "Игнорировать первые N полей")
-	sFlag := flag.Int("s", 0, "Игнорировать первые N символов")
+	countFlag := flag.Bool("c", false, "Подсчитать количество встречаний строки")
+	duplicateFlag := flag.Bool("d", false, "Вывести только повторяющиеся строки")
+	uniqFlag := flag.Bool("u", false, "Вывести только уникальные строки")
+	ignoreCaseFlag := flag.Bool("i", false, "Игнорировать регистр")
+	fieldFlag := flag.Int("f", 0, "Игнорировать первые N полей")
+	CharFlag := flag.Int("s", 0, "Игнорировать первые N символов")
 	flag.Parse()
-
-	if (*cFlag && *dFlag) || (*cFlag && *uFlag) || (*dFlag && *uFlag) {
+ 
+	if (*countFlag && *duplicateFlag) || (*countFlag && *uniqFlag) || (*duplicateFlag && *uniqFlag) {
 		fmt.Fprintln(os.Stderr, "Ошибка: флаги -c, -d, -u нельзя использовать одновременно")
 		flag.Usage()
-		os.Exit(1)
+		return
 	}
 
 	var input *os.File = os.Stdin
@@ -44,6 +46,8 @@ func main() {
 		}
 		defer output.Close()
 	}
-
-	Choose(input, output, *cFlag, *dFlag, *uFlag, *iFlag, *fFlag, *sFlag)
+	err := funcs.Uniq(input, output, *countFlag, *duplicateFlag, *uniqFlag, *ignoreCaseFlag, *fieldFlag, *CharFlag)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

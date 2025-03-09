@@ -16,7 +16,7 @@ func main() {
 	fieldFlag := flag.Int("f", 0, "Игнорировать первые N полей")
 	CharFlag := flag.Int("s", 0, "Игнорировать первые N символов")
 	flag.Parse()
- 
+
 	if (*countFlag && *duplicateFlag) || (*countFlag && *uniqFlag) || (*duplicateFlag && *uniqFlag) {
 		fmt.Fprintln(os.Stderr, "Ошибка: флаги -c, -d, -u нельзя использовать одновременно")
 		flag.Usage()
@@ -32,7 +32,7 @@ func main() {
 		input, err = os.Open(args[0])
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Ошибка открытия входного файла:", err)
-			os.Exit(1)
+			return
 		}
 		defer input.Close()
 	}
@@ -42,7 +42,7 @@ func main() {
 		output, err = os.Create(args[1])
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Ошибка создания выходного файла:", err)
-			os.Exit(1)
+			return
 		}
 		defer output.Close()
 	}

@@ -1,23 +1,31 @@
 package main
 
 import (
-	funcs "uniq/Funcs"
-
 	"flag"
 	"fmt"
 	"os"
+	funcs "uniq/uniq"
 )
 
-func main() {
-	countFlag := flag.Bool("c", false, "Подсчитать количество встречаний строки")
-	duplicateFlag := flag.Bool("d", false, "Вывести только повторяющиеся строки")
-	uniqFlag := flag.Bool("u", false, "Вывести только уникальные строки")
-	ignoreCaseFlag := flag.Bool("i", false, "Игнорировать регистр")
-	fieldFlag := flag.Int("f", 0, "Игнорировать первые N полей")
-	CharFlag := flag.Int("s", 0, "Игнорировать первые N символов")
+func parseFlags() funcs.Options {
+	options := funcs.Options{}
+
+	flag.BoolVar(&options.Count, "c", false, "Подсчитать количество встречаний строки")
+	flag.BoolVar(&options.Duplicates, "d", false, "Вывести только повторяющиеся строки")
+	flag.BoolVar(&options.Unique, "u", false, "Вывести только уникальные строки")
+	flag.BoolVar(&options.IgnoreCase, "i", false, "Игнорировать регистр")
+	flag.IntVar(&options.NumFields, "f", 0, "Игнорировать первые N полей")
+	flag.IntVar(&options.NumChars, "s", 0, "Игнорировать первые N символов")
+
 	flag.Parse()
 
-	if (*countFlag && *duplicateFlag) || (*countFlag && *uniqFlag) || (*duplicateFlag && *uniqFlag) {
+	return options
+}
+
+func main() {
+	options := parseFlags()
+
+	if (options.Count && options.Duplicates) || (options.Count && options.Unique) || (options.Duplicates && options.Unique) {
 		fmt.Fprintln(os.Stderr, "Ошибка: флаги -c, -d, -u нельзя использовать одновременно")
 		flag.Usage()
 		return
@@ -46,8 +54,6 @@ func main() {
 		}
 		defer output.Close()
 	}
-	err := funcs.Uniq(input, output, *countFlag, *duplicateFlag, *uniqFlag, *ignoreCaseFlag, *fieldFlag, *CharFlag)
-	if err != nil {
-		fmt.Println(err)
-	}
+
+	funcs.Uniq(input, output, options)
 }
